@@ -45,6 +45,7 @@ Class RestComponent extends Object {
 			'Defaults',
 		),
 		'auth' => array(
+                    	'type' => 'default',
 			'requireSecure' => false,
 			'keyword' => 'TRUEREST',
 			'fields' => array(
@@ -532,23 +533,41 @@ Class RestComponent extends Object {
 		// Set credentials
 		if ($set === true) {
 			if (!empty($_SERVER['HTTP_AUTHORIZATION'])) {
-				$parts = explode(' ', $_SERVER['HTTP_AUTHORIZATION']);
-				$match = array_shift($parts);
-				if ($match !== $this->_settings['auth']['keyword']) {
-					return false;
-				}
-				$str = join(' ', $parts);
-				parse_str($str, $this->_credentials);
+				switch ($this->_settings['auth']['type']) {
+					case 'basic':
+                                                $credentialsBase64 = substr($_SERVER['HTTP_AUTHORIZATION'], strlen("Basic "));
+                                                if (!$credentialsBase64) {
+							return false;
+						}
+                                                
+                                                $credentials = base64_decode($credentialsBase64);
+                                                $parts = explode(':', $credentials);
+                                                $this->_credentials['username'] = $parts[0];
+                                                $this->_credentials['password'] = $parts[1];
+                                                
+						break;
 
-				if (!isset($this->_credentials[$this->_settings['auth']['fields']['class']])) {
-					$this->_credentials[$this->_settings['auth']['fields']['class']] = $this->_settings['ratelimit']['default'];
-				}
+					case 'default':
+						$parts = explode(' ', $_SERVER['HTTP_AUTHORIZATION']);
+						$match = array_shift($parts);
+						if ($match !== $this->_settings['auth']['keyword']) {
+							return false;
+						}
+						$str = join(' ', $parts);
+						parse_str($str, $this->_credentials);
 
-				$this->log(array(
-					'username' => @$this->_credentials[$this->_settings['auth']['fields']['username']],
-					'apikey' => $this->_credentials[$this->_settings['auth']['fields']['apikey']],
-					'class' => $this->_credentials[$this->_settings['auth']['fields']['class']],
-				));
+						if (!isset($this->_credentials[$this->_settings['auth']['fields']['class']])) {
+							$this->_credentials[$this->_settings['auth']['fields']['class']] = $this->_settings['ratelimit']['default'];
+						}
+                                                
+						$this->log(array(
+							'username' => @$this->_credentials[$this->_settings['auth']['fields']['username']],
+							'apikey' => $this->_credentials[$this->_settings['auth']['fields']['apikey']],
+							'class' => $this->_credentials[$this->_settings['auth']['fields']['class']],
+
+						));
+						break;
+				}
 			}
 
 			return $this->_credentials;
