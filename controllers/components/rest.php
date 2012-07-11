@@ -707,7 +707,7 @@ Class RestComponent extends Object {
 
 	public function isActive () {
 		if ($this->isActive === null) {
-			if (!isset($this->Controller) || !is_object($this->Controller)) {
+			if (!isset($this->Controller) || !is_object($this->Controller) || !isset($this->Controller->params['url']['ext'])) {
 				return false;
 			}
 
