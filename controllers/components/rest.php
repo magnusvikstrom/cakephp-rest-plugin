@@ -132,6 +132,7 @@ Class RestComponent extends Object {
 		'debug' => 0,
 		'onlyActiveWithAuth' => false,
 		'catchredir' => false,
+		'jsonHeader' => 'text/javascript' // Use 'application/json' if you don't need JSONP
 	);
 
 	/**
