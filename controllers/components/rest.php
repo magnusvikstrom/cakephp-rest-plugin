@@ -10,6 +10,7 @@ Class RestComponent extends Object {
 		405 => 'Method Not Allowed',
 		406 => 'Not Acceptable',
 		407 => 'Proxy Authentication Required',
+		409 => 'Conflict',
 		408 => 'Request Time-out',
 		500 => 'Internal Server Error',
 		501 => 'Not Implemented',
