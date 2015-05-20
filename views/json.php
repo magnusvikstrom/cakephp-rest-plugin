@@ -68,14 +68,14 @@ class JsonView extends View {
 
 					if (is_array($value)) {
 						// recursion
-						$result_array[utf8_encode($key)] = $this->utf8_encode_array($value);
+						$result_array[$this->safe_utf8_encode($key)] = $this->utf8_encode_array($value);
 					} else {
 						// no recursion
 						if (is_string($value)) {
-							$result_array[utf8_encode($key)] = utf8_encode($value);
+							$result_array[$this->safe_utf8_encode($key)] = $this->safe_utf8_encode($value);
 						} else {
 							// do not re-encode non-strings, just copy data
-							$result_array[utf8_encode($key)] = $value;
+							$result_array[$this->safe_utf8_encode($key)] = $value;
 						}
 					}
 				} else if ($this->array_type($array) == "vector") {
@@ -88,7 +88,7 @@ class JsonView extends View {
 						// no recursion
 
 						if (is_string($value)) {
-							$result_array[$key] = utf8_encode($value);
+							$result_array[$key] = $this->safe_utf8_encode($value);
 						} else {
 							// do not re-encode non-strings, just copy data
 							$result_array[$key] = $value;
@@ -135,6 +135,20 @@ class JsonView extends View {
 		return false;	// not array
 	}
 
+  /**
+   * PHP convert from most encodings to UTF-8. Keeping already UTF-8 encoded strings as is
+   *
+   * Author: Magnus Vikstrøm (20-May-2015)
+   *
+   *
+   * @param string $input
+   *
+   * @return string
+   */
+  function safe_utf8_encode($input) {
+    return mb_convert_encoding($input, "UTF-8", "auto");
+  }
+
 	/**
 	 * PHP version independent json_encode
 	 *
@@ -171,7 +185,7 @@ class JsonView extends View {
 
 			if (is_string($utf8_encoded)) {
 				static $jsonReplaces = array(array("\\", "/", "\n", "\t", "\r", "\b", "\f", '"'), array('\\\\', '\\/', '\\n', '\\t', '\\r', '\\b', '\\f', '\"'));
-				return '"' . str_replace($jsonReplaces[0], $jsonReplaces[1], utf8_encode($utf8_encoded)) . '"';
+				return '"' . str_replace($jsonReplaces[0], $jsonReplaces[1], $this->safe_utf8_encode($utf8_encoded)) . '"';
 			} else {
 				return $utf8_encoded;
 			}
