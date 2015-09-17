@@ -48,7 +48,26 @@ class JsonView extends View {
 		return $this->_encode($response);
 	}
 
+	function utf8_encode_recursive($array)
+	{
+		if (function_exists('array_walk_recursive')) {
+			return $this->utf8_encoder_walk($array);
+		} else {
+			return $this->utf8_encode_array($array);
+		}
+	}
 
+
+	function utf8_encoder_walk($array) {
+
+		array_walk_recursive($array, function(&$item, $key) {
+			if(!mb_detect_encoding($item, 'utf-8', true)) {
+				$item = utf8_encode($item);
+			}
+		});
+
+		return $array;
+	}
 	/**
 	 * (Recursively) utf8_encode each value in an array.
 	 * 
@@ -162,7 +181,7 @@ class JsonView extends View {
 	 * @return string
 	 */
 	public function _encode ($response) {
-		$utf8_encoded = $this->utf8_encode_array($response);
+		$utf8_encoded = $this->utf8_encode_recursive($response);
 
 		if (function_exists('json_encode') && is_string($json_encoded = json_encode($utf8_encoded))) {
 			// PHP 5.2+, no utf8 problems
