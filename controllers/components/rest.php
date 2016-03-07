@@ -543,7 +543,9 @@ Class RestComponent extends Object {
 						}
                                                 
                                                 $credentials = base64_decode($credentialsBase64);
-                                                $parts = explode(':', $credentials);
+                                                // Limit explode to 2 to avoid problems with pw containing ':'
+                                                // Username can't contain ':'.
+                                                $parts = explode(':', $credentials, 2);
                                                 $this->_credentials['username'] = $parts[0];
                                                 $this->_credentials['password'] = $parts[1];
                                                 
