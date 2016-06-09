@@ -541,14 +541,14 @@ Class RestComponent extends Object {
                                                 if (!$credentialsBase64) {
 							return false;
 						}
-                                                
+
                                                 $credentials = base64_decode($credentialsBase64);
                                                 // Limit explode to 2 to avoid problems with pw containing ':'
                                                 // Username can't contain ':'.
                                                 $parts = explode(':', $credentials, 2);
                                                 $this->_credentials['username'] = $parts[0];
                                                 $this->_credentials['password'] = $parts[1];
-                                                
+
 						break;
 
 					case 'default':
@@ -563,7 +563,7 @@ Class RestComponent extends Object {
 						if (!isset($this->_credentials[$this->_settings['auth']['fields']['class']])) {
 							$this->_credentials[$this->_settings['auth']['fields']['class']] = $this->_settings['ratelimit']['default'];
 						}
-                                                
+
 						$this->log(array(
 							'username' => @$this->_credentials[$this->_settings['auth']['fields']['username']],
 							'apikey' => $this->_credentials[$this->_settings['auth']['fields']['apikey']],
@@ -860,7 +860,7 @@ Class RestComponent extends Object {
 			$response = $data;
 		} else {
 			$response = compact('data');
-		}		
+		}
 
 		if ($this->_settings['meta']['enable']) {
 			$serverKeys = array_flip($this->_settings['meta']['requestKeys']);
@@ -1012,5 +1012,14 @@ Class RestComponent extends Object {
 		));
 		$this->shutdown($this->Controller);
 		die($encoded);
+	}
+
+	/**
+	 * Insert and/or replace settings dynamically
+	 * @param string $path. Xpath specifying setting to insert
+	 * @param array $newSettings. New settings to insert
+	 */
+	public function insertSettings ($path, $newSettings) {
+		$this->_settings = Set::insert($this->_settings, $path, $newSettings);
 	}
 }
