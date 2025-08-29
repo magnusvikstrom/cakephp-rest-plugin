@@ -183,7 +183,7 @@ class JsonView extends View {
 	public function _encode ($response) {
 		$utf8_encoded = $this->utf8_encode_recursive($response);
 
-		if (function_exists('json_encode') && is_string($json_encoded = json_encode($utf8_encoded))) {
+		if (function_exists('json_encode') && is_string($json_encoded = json_encode($utf8_encoded, JSON_NUMERIC_CHECK))) {
 			// PHP 5.2+, no utf8 problems
 			return $json_encoded;
 		}
