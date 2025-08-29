@@ -2,6 +2,7 @@
 Class RestComponent extends Object {
 	public $codes = array(
 		200 => 'OK',
+		204 => 'No Content',
 		400 => 'Bad Request',
 		401 => 'Unauthorized',
 		402 => 'Payment Required',
